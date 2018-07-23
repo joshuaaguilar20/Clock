@@ -11,78 +11,97 @@ class App extends React.Component {
       super();
       this.state = {
         time: {},
-        seconds: 10,
+        seconds: 4,
         breakSeconds: 300
       }; //default secounds for 25
       this.timer = 0; //needed to start and stop timer
       this.breakthing = 0;
+      this.flag = false;
 
     }
 
     secondsToTime = (secs) => { //takes amount of seconds and returns obj with minutes sec, hours 
-      let hours = Math.floor(secs / (60 * 60));
       let divisor_for_minutes = secs % (60 * 60);
       let minutes = Math.floor(divisor_for_minutes / 60);
       let divisor_for_seconds = divisor_for_minutes % 60;
-      let seconds = Math.ceil(divisor_for_seconds);
+      let seconds = Math.ceil(divisor_for_seconds)
 
       let obj = {
-        "h": hours,
-        "m": minutes,
-        "s": seconds
+        "m": minutes.toString().padStart(2,"0"),  //pads extra 0. 
+        "s": seconds.toString().padStart(2,"0")
       };
-      return obj;
+      return obj
     }
 
     componentDidMount = () => {
-      let timeLeftVar = this.secondsToTime(this.state.seconds);
-      this.setState({
-        time: timeLeftVar
-      });
-    }
-
-    startTimer = () => {
-      this.timer = setInterval(this.countDown, 1000);
-    }
-
-
-    stopTimer = () => {
-      this.state.seconds > 0 ? clearInterval(this.timer):clearInterval(this.breakthing)
-      clearInterval(this.timer);
-    }
-
-    countDown = () => {
-      // Remove one second, set state so a re-render happens.
-      let seconds = this.state.seconds - 1;
-      this.setState({
-        time: this.secondsToTime(seconds),
-        seconds: seconds,
-      });
-      if (seconds === 0) {
-        this.stopTimer()
-        this.breakTimer()
-        this.intervalCounter()
+       let timeLeftVar = this.flag ? this.secondsToTime(this.state.breakSeconds):
+      this.secondsToTime(this.state.seconds)
+      this.setState({time: timeLeftVar});
+      
+    }  
+    startStopTimer = (input) => {
+      switch(input){
+        case "stop":
+         this.flag ? this.breakthing = clearInterval(this.breakthing): 
+        this.timer = clearInterval(this.timer)
+        break;
+        case "start":
+         this.flag ? this.breakthing = setInterval(this.breakCountDown, 1000):
+        this.timer = setInterval(this.countDown,1000)
+        break;
+        default:
+        alert("something went wrong");
       }
     }
-
-    breakTimer = () => {
-      let timeBreak = this.secondsToTime(this.state.breakSeconds);
+   
+  
+    countDown = () => {
+      let seconds = this.state.seconds - 1
       this.setState({
-        time: timeBreak
-      });
+      time: this.secondsToTime(seconds),
+      seconds,});
+      if(this.state.seconds === 0){
+        this.startBreaktimer()
+
+      };
     }
-
-    intervalCounter = () => {
-     this.breakthing = setInterval(this.breakTimerCount, 1000);
-    };
-
-    breakTimerCount = () => {
+    breakCountDown = () => {
       let breakSeconds = this.state.breakSeconds - 1
       this.setState({
-        time: this.secondsToTime(breakSeconds),
-        breakSeconds
-      });
-    };
+      time: this.secondsToTime(breakSeconds),
+      breakSeconds,});
+      if(this.state.breakSeconds === 0){
+        this.startSessionTimer() //error becuase sec are all used up need to copy at start. ? 
+      };
+    }
+
+
+
+
+
+    resetFunction = () => {
+      this.startStopTimer('stop');
+      this.setState({ time: {},
+        seconds: 4,
+        breakSeconds: 3});
+      this.componentDidMount()
+    }
+
+   
+
+    startBreaktimer = () => {
+        this.startStopTimer('stop');
+        this.flag = true;
+        this.componentDidMount()
+        this.startStopTimer("start");
+    }
+     startSessionTimer = () => {
+        this.startStopTimer('stop');
+        this.flag = false;
+        this.componentDidMount()
+        this.startStopTimer("start");
+        }
+    
 
 
 
@@ -90,10 +109,18 @@ class App extends React.Component {
       switch (operator) {
         case 'add':
           this.state.seconds = this.state.seconds + 60;
-          // this.componentDidMount();
+          this.componentDidMount();
           break;
         case 'sub':
           this.state.seconds = this.state.seconds - 60;
+          this.componentDidMount();
+          break;
+          case 'addBreak':
+          this.state.breakSeconds = this.state.breakSeconds + 60;
+          this.componentDidMount();
+          break;
+        case 'subBreak':
+          this.state.breakSeconds = this.state.breakSeconds - 60;
           this.componentDidMount();
           break;
         default:
@@ -101,29 +128,29 @@ class App extends React.Component {
 
       }
     }
-
-  
+ 
     render() {
       return(
         <div>
-         
          <div className="container-fluid">
-         <h1>Session Length:{this.state.time.m}</h1>
-
+         <div onClick={this.resetFunction}>Reset</div>
+         <h1>Session Length:{Math.floor(this.state.seconds / 60)}</h1>
         <div className="d-flex flex-row">
           <button className="btn-success" onClick={() => this.changeMinute('add')}>Add</button>
            <button onClick={() => this.changeMinute('sub')}>Sub</button>
-           <button onClick={this.startTimer}>Start</button>
-             <button onClick={this.stopTimer}>Stop</button>
+           <button onClick={() => this.startStopTimer('start')}>Start</button>
+           <button onClick={() => this.startStopTimer('stop')}>Stop</button>
             <div className="col-md-12 mx-auto">
                 <div className="display">
                     <div className="display-time">{this.state.time.m}:{this.state.time.s}</div>
                     <div className="display-date">{this.state.seconds > 0 ? "Session" : "Break"}</div>
                 </div>
+                <button className="btn-success" onClick={() => this.changeMinute('addBreak')}>Add</button>
+                <button onClick={() => this.changeMinute('subBreak')}>Sub</button>
+                <h2>Break Length:{Math.floor(this.state.breakSeconds / 60)}</h2>
             </div>
         </div>
-    </div>
-    <Panel/>    
+    </div>   
   </div>
   
 );
