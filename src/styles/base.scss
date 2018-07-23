@@ -1,0 +1,29 @@
+
+
+body, html {
+    height: 100%;
+}
+
+body { 
+    /* The image used https://cdn.suwalls.com/wallpapers/digital-art/shattered-clock-22468-1920x1080.jpg */
+    background-image: url("https://cdn.suwalls.com/wallpapers/digital-art/shattered-clock-22468-1920x1080.jpg");
+
+
+
+
+
+    /* Full height https://s3.envato.com/files/243549096/Clock%20Background%2001_preview1.JPG*/
+    height: 100%; 
+
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+h1{
+    color:white;
+}
+h2{
+    color:white;
+}

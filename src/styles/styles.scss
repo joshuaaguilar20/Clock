@@ -1,14 +1,8 @@
-
-
-
-h1{
-    color:whitesmoke;
-    text-align: center;
-}
-
-body {
-    background-color: black;
-}
+@import './components/settings.scss';
+@import 'base.scss';
+@import './components/display.scss';
+@import './components/panel.scss';
+@import './components/header.scss';
 
 
   
