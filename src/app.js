@@ -8,39 +8,46 @@ class App extends React.Component {
     constructor() {
       super();
       this.state = {
-        time: "25",
-        seconds:1500,
-        breakSeconds:300,
-        isChecked:true
+        time:"25:00",
+        sessionMinutes: 25,
+        breakMinutes: 5,
+        isChecked: true
       }; //default secounds for 25
       this.timer = 0; //needed to start and stop timer
       this.breakid = 0;
-      this.flag = false;
-      this.secondsRemaining = this.state.seconds;
-      this.startStop = false
+      this.flag = true;
+      this.secondsRemaining = 0;
+      this.startStop = true
     }
-   
+
     secondsToTime = (secs) => { //takes amount of seconds and returns obj with minutes sec, hours 
       let divisor_for_minutes = secs % (60 * 60);
       let minutes = Math.floor(divisor_for_minutes / 60);
       let divisor_for_seconds = divisor_for_minutes % 60;
       let seconds = Math.ceil(divisor_for_seconds)
-      return  minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
-  }
+      return minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0");
+    }
     componentDidMount = () => {
+      if (this.flag) {
+        this.secondsRemaining = this.state.sessionMinutes * 60
+      } else {
+        this.secondsRemaining = this.state.breakMinutes * 60
+      }
       this.setState({
         time: this.secondsToTime(this.secondsRemaining)
-  });
-}
- 
+      });
+    };
+
     handleChange = () => {
-      this.setState({ isChecked: !this.state.isChecked } );
+      this.setState({
+        isChecked: !this.state.isChecked
+      });
       this.startStopTimer(this.state.isChecked);
     }
     startStopTimer = (input) => {
       switch (input) {
         case false:
-           this.timer = clearInterval(this.timer)
+          this.timer = clearInterval(this.timer)
           break;
         case true:
           this.timer = setInterval(this.countDown, 1000)
@@ -58,21 +65,13 @@ class App extends React.Component {
         this.startTimer();
       }
     };
-    resetFunction = () => {
-      this.startStopTimer(false);
-      this.setState({
-        time:"00:00",
-        seconds: 4,
-        breakSeconds: 3
-      });
-      this.componentDidMount()
-    }
+    
     startTimer = () => {
-      this.startStopTimer(false);
+      this.startStopTimer(false); //false stops timer 
       if (this.flag) {
-        this.secondsRemaining = this.state.seconds
+        this.secondsRemaining = this.state.sessionMinutes * 60
       } else {
-        this.secondsRemaining = this.state.breakSeconds
+        this.secondsRemaining = this.state.breakMinutes * 60
       }
       this.flag = !this.flag;
       this.componentDidMount()
@@ -81,52 +80,62 @@ class App extends React.Component {
     changeMinute = (operator) => {
       switch (operator) {
         case 'add':
-          if(this.state.seconds <3600)
-          this.state.seconds = this.state.seconds + 60;
-          this.secondsRemaining = this.state.seconds;
-          this.componentDidMount();
+          if (this.state.sessionMinutes < 60 && this.state.isChecked){
+            this.state.sessionMinutes++;
+            if (this.flag) {this.secondsRemaining = this.state.sessionMinutes * 60};
+            this.setState(()=>({
+              sessionMinutes:this.state.sessionMinutes,
+              time:this.secondsToTime(this.secondsRemaining)       
+              }));
+            }
           break;
         case 'sub':
-          if(this.state.seconds > 60)
-          this.state.seconds = this.state.seconds - 60;
-          this.secondsRemaining = this.state.seconds;
-          this.componentDidMount();
+          if (this.state.sessionMinutes > 1  && this.state.isChecked){
+            this.state.sessionMinutes--;
+            if (this.flag) {this.secondsRemaining = this.state.sessionMinutes * 60};
+            this.setState(()=>({
+              sessionMinutes:this.state.sessionMinutes,
+              time:this.secondsToTime(this.secondsRemaining) 
+            }));
+          };
           break;
         case 'addBreak':
-          if(this.state.breakSeconds <3600)
-          this.state.breakSeconds = this.state.breakSeconds + 60;
-          this.secondsRemaining = this.state.breakSeconds
-          this.componentDidMount();
+          if (this.state.breakMinutes < 60  && this.state.isChecked)
+              this.state.breakMinutes ++;
+              if (!this.flag) {this.secondsRemaining = this.state.breakMinutes * 60};
+              this.setState(()=>({breakMinutes:this.state.breakMinutes,
+                                          time:this.secondsToTime(this.secondsRemaining) 
+              }));
           break;
         case 'subBreak':
-          if(this.state.breakSeconds > 60)
-          this.state.breakSeconds = this.state.breakSeconds - 60;
-          this.state.secondsRemaining = this.state.breakSeconds;
-          this.componentDidMount();
+          if (this.state.breakMinutes > 1  && this.state.isChecked)
+            this.state.breakMinutes --;
+            if (!this.flag) {this.secondsRemaining = this.state.breakMinutes * 60};
+            this.setState(()=>({breakMinutes:this.state.breakMinutes,
+                                        time:this.secondsToTime(this.secondsRemaining) 
+            }));
           break;
         default:
-          alert("Something Went Wrong")
+          alert("Something Went Wrong");
       }
     }
     render() {
       return (
-      
-        
         <div className="container">
             <div className="text-justify" id="session-label">Session Length:
-                <h1 id="session-length">{this.secondsToTime(this.state.seconds)}</h1>
+                <h1 id="session-length">{this.state.sessionMinutes}</h1>
             </div>
             <span class="badge badge-primary">Primary</span>
             <div id="session-increment" class="d-block bg-primary" onClick={()=> this.changeMinute('add')}>Add</div>
             <div id="session-decrement" onClick={()=> this.changeMinute('sub')}>Sub</div>
             <div className="display">
                 <div id="time-left" className="display-time">{this.state.time}</div>
-                <div id="timer-label" className="display-date">{this.flag ? "Break":"Session"}</div>
+                <div id="timer-label" className="display-date">{this.flag ? "Session":"Break"}</div>
             </div>
             <div id="break-increment" className="btn-success" onClick={()=> this.changeMinute('addBreak')}>Add</div>
             <div id="break-decrement" onClick={()=> this.changeMinute('subBreak')}>Sub</div>
             <div id="break-label">Break Length:
-                <h2 id="break-length"> {Math.floor(this.state.breakSeconds / 60)}</h2>
+                <h2 id="break-length"> {this.state.breakMinutes}</h2>
             </div>
             <div className="switch-container">
                 <label>
