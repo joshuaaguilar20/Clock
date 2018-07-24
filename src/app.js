@@ -8,16 +8,17 @@ class App extends React.Component {
     constructor() {
       super();
       this.state = {
-        time:"25:00",
-        sessionMinutes: 25,
-        breakMinutes: 5,
-        isChecked: true
+        time:this.sessionMinutes,
+        sessionMinutes:25,
+        breakMinutes:5,
+        isChecked:true
       }; //default secounds for 25
       this.timer = 0; //needed to start and stop timer
       this.breakid = 0;
       this.flag = true;
       this.secondsRemaining = 0;
       this.startStop = true
+      this.x = this.flag ? "Session":"Break"
     }
 
     secondsToTime = (secs) => { //takes amount of seconds and returns obj with minutes sec, hours 
@@ -63,14 +64,17 @@ class App extends React.Component {
       });
       if (this.secondsRemaining === 0) {
         this.startTimer();
+        }
       }
-    };
+
     
     startTimer = () => {
+
       this.startStopTimer(false); //false stops timer 
       if (this.flag) {
         this.secondsRemaining = this.state.sessionMinutes * 60
       } else {
+        this.audioBeep.play();
         this.secondsRemaining = this.state.breakMinutes * 60
       }
       this.flag = !this.flag;
@@ -100,42 +104,64 @@ class App extends React.Component {
           };
           break;
         case 'addBreak':
-          if (this.state.breakMinutes < 60  && this.state.isChecked)
-              this.state.breakMinutes ++;
+          if (this.state.breakMinutes < 60  && this.state.isChecked){
+              this.state.breakMinutes++;
               if (!this.flag) {this.secondsRemaining = this.state.breakMinutes * 60};
               this.setState(()=>({breakMinutes:this.state.breakMinutes,
                                           time:this.secondsToTime(this.secondsRemaining) 
               }));
+            }
           break;
         case 'subBreak':
-          if (this.state.breakMinutes > 1  && this.state.isChecked)
+          if (this.state.breakMinutes > 1  && this.state.isChecked){
             this.state.breakMinutes --;
             if (!this.flag) {this.secondsRemaining = this.state.breakMinutes * 60};
             this.setState(()=>({breakMinutes:this.state.breakMinutes,
                                         time:this.secondsToTime(this.secondsRemaining) 
             }));
+          }
           break;
         default:
           alert("Something Went Wrong");
       }
     }
+    resetFunction = () => {
+      this.startStopTimer(false); 
+      this.timer = 0; //needed to start and stop timer
+      this.breakid = 0;
+      this.flag = true;
+      this.secondsRemaining = 0;
+      this.startStop = true
+      this.setState(()=>({
+        breakMinutes:5,
+        time:"25:00",
+        sessionMinutes:25,
+        isChecked:true
+        }));
+        this.audioBeep.pause();
+        this.audioBeep.currentTime = 0;
+      this.componentDidMount();
+  
+    };
     render() {
       return (
         <div className="container">
+          <h3 id="reset" onClick={()=> this.resetFunction()}>reset</h3>
             <div className="text-justify" id="session-label">Session Length:
                 <h1 id="session-length">{this.state.sessionMinutes}</h1>
             </div>
-            <span class="badge badge-primary">Primary</span>
-            <div id="session-increment" class="d-block bg-primary" onClick={()=> this.changeMinute('add')}>Add</div>
+            
+            <span className="badge badge-primary">Primary</span>
+            <div id="session-increment" className="d-block bg-primary" onClick={()=> this.changeMinute('add')}>Add</div>
             <div id="session-decrement" onClick={()=> this.changeMinute('sub')}>Sub</div>
             <div className="display">
                 <div id="time-left" className="display-time">{this.state.time}</div>
-                <div id="timer-label" className="display-date">{this.flag ? "Session":"Break"}</div>
+                <div id="timer-label" className="display-date">{this.x}</div>
             </div>
             <div id="break-increment" className="btn-success" onClick={()=> this.changeMinute('addBreak')}>Add</div>
             <div id="break-decrement" onClick={()=> this.changeMinute('subBreak')}>Sub</div>
             <div id="break-label">Break Length:
-                <h2 id="break-length"> {this.state.breakMinutes}</h2>
+                <h2 id="break-length">{this.state.breakMinutes}</h2>
             </div>
             <div className="switch-container">
                 <label>
@@ -147,6 +173,9 @@ class App extends React.Component {
                     </div>
                 </label>
             </div>
+            <audio id="beep" preload="auto" 
+            src="https://goo.gl/65cBl1"
+            ref={(audio) => { this.audioBeep = audio; }} />
            
         </div>
       
