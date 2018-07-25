@@ -9,8 +9,8 @@ class App extends React.Component {
       super();
       this.state = {
         time:25,
-        sessionMinutes:.5,
-        breakMinutes: .5,
+        sessionMinutes:25,
+        breakMinutes:25,
         isChecked: true
       }; //default secounds for 25
       this.timer = 0; //needed to start and stop timer
