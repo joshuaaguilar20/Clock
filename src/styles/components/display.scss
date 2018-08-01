@@ -11,8 +11,10 @@ $display-color: #61DAFB;
     flex-direction: column;
     height: 14rem;
     justify-content: center;
-    margin: 1rem auto;    
+    margin: 0 auto;    
     width: 14rem;
+    text-align: justify;
+    position: relative;
 }
 
 .display-date {
@@ -26,4 +28,16 @@ $display-color: #61DAFB;
     font-size: 50px;
     font-weight: 600;
     text-align: center;
+}
+#session-decrement{
+    margin-left:auto;
+    margin-right:auto;
+    position: relative;
+}
+#session-increment{
+    color:black;
+    background: #282C34;
+    margin-left:auto;
+    margin-right:auto;
+    position: relative;
 }

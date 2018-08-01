@@ -104,4 +104,68 @@ input[type="checkbox"].switch:checked + div > div {
 	transform: translate3d(46px, 0, 0);
 }
 
+#session-label{
+
+	float:right;
+	color:white;
+	text-emphasis-color:white;
+	margin-left:0;
+	margin-right: 0;position: absolute;
+	top: 11%; left: 80%; right: 100%
+}
+
+.btn:active {
+	color:red;
+	background-color: #57BB00;
+  }
+
+  
+  #break-label{
+	color:white;
+	text-emphasis-color:white;
+	max-width:20px;
+	max-width:50%;
+	min-width:150px;
+	padding:2px;
+	float:right;
+	margin:1px;
+	border-radius: 1px;
+	border:1px solid $display-border-color;
+	background:$display-background-color;
+	text-align: center;
+	border-radius: 25px;
+	z-index: 101;
+	margin-left:auto;
+	margin-right:auto;
+	position: relative;
+	left: 20%;
+	right:15%;
+    border: 3px solid #73AD21;
+	
+  }
+  #reset{
+	  float:bottom;
+	top: 90%; left: 40%; right: 0; bottom:10; 
+  }
+  div{margin-top:27px;}
+
+  #session-label{
+	max-width:20px;
+	max-width:50%;
+	min-width:150px;
+	padding:2px;
+	float:right;
+	margin:1px;
+	border-radius: 1px;
+	border:1px solid $display-border-color;
+	background:$display-background-color;
+	text-align: center;
+	border-radius: 25px;
+	z-index: 101;
+	margin-left:auto;
+    margin-right:auto;
+
+  align-items: center;
+  justify-content: center
+  }
 

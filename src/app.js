@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'normalize.css/normalize.css';
 import './styles/styles.scss';
+import { DragSource } from 'react-dnd';
+import Draggable from 'react-draggable';
 
 
 class App extends React.Component {
@@ -20,7 +22,6 @@ class App extends React.Component {
       this.startStop = true
       this.x = this.flag ? "Session" : "Break"
     }
-
     secondsToTime = (secs) => { //takes amount of seconds and returns obj with minutes sec, hours 
       let divisor_for_minutes = secs % (60 * 60);
       let minutes = Math.floor(divisor_for_minutes / 60);
@@ -38,7 +39,6 @@ class App extends React.Component {
         time: this.secondsToTime(this.secondsRemaining)
       });
     };
-
     handleChange = () => {
       this.setState({
         isChecked: !this.state.isChecked
@@ -68,9 +68,7 @@ class App extends React.Component {
         this.startTimer();
       }
     }
-
     startTimer = () => {
-
       this.startStopTimer(false); //false stops timer 
       if (this.flag) {
         this.secondsRemaining = this.state.sessionMinutes * 60
@@ -144,7 +142,7 @@ class App extends React.Component {
       this.startStop = true
       this.setState(() => ({
         breakMinutes: 5,
-        time: "25:00",
+        time:"25",
         sessionMinutes: 25,
         isChecked: true
       }));
@@ -152,25 +150,35 @@ class App extends React.Component {
       this.audioBeep.currentTime = 0;
       this.componentDidMount();
     };
+    
+    
     render() {
       return (
-        <div className="container">
-          <h3 id="reset" onClick={()=> this.resetFunction()}>reset</h3>
-            <div className="text-justify" id="session-label">Session Length:
-                <h1 id="session-length">{this.state.sessionMinutes}</h1>
-            </div>
-            <span className="badge badge-primary">Primary</span>
-            <div id="session-increment" className="d-block bg-primary" onClick={()=> this.changeMinute('add')}>Add</div>
-            <div id="session-decrement" onClick={()=> this.changeMinute('sub')}>Sub</div>
-            <div className="display">
+        <div className="container style=position; height: 50%; border: solid; bottom: 50px; right: 50%;  left: 50%;">
+          <Draggable
+          defaultPosition={{x: 50, y: 100}}
+          >
+          <h3 id="reset" className="row" onClick={()=> this.resetFunction()}>reset</h3>
+        </Draggable>
+
+        <Draggable><span
+             id="session-label">Session Length:
+                <h2 id="session-length">{this.state.sessionMinutes}</h2>
+            <button id="session-increment" onClick={()=> this.changeMinute('add')}>Add</button>
+            <button id="session-decrement" onClick={()=> this.changeMinute('sub')}>Sub</button>
+              </span></Draggable>
+
+              <Draggable><span
+               id="break-label">Break Length:
+              <h2 id="break-length">{this.state.breakMinutes}</h2>
+             <button id="break-increment" className="btn-success" onClick={()=> this.changeMinute('addBreak')}>Add</button>
+            <button id="break-decrement" onClick={()=> this.changeMinute('subBreak')}>Sub</button>
+                </span></Draggable>
+                
+                <Draggable><span className="display">
                 <div id="time-left" className="display-time">{this.state.time}</div>
                 <div id="timer-label" className="display-date">{this.flag ? "Session" : "Break"}</div>
-            </div>
-            <div id="break-increment" className="btn-success" onClick={()=> this.changeMinute('addBreak')}>Add</div>
-            <div id="break-decrement" onClick={()=> this.changeMinute('subBreak')}>Sub</div>
-            <div id="break-label">Break Length:
-                <h2 id="break-length">{this.state.breakMinutes}</h2>
-            </div>
+                </span></Draggable>
             <div className="switch-container">
                 <label>
                     <input id="start_stop" ref="switch" checked={ this.state.isChecked } onChange={ this.handleChange } className="switch" type="checkbox" />
@@ -178,17 +186,16 @@ class App extends React.Component {
                         <div></div>
                     </div>
                 </label>
+                <audio id="beep" preload="auto" src="https://goo.gl/65cBl1" ref={(audio) => { this.audioBeep = audio; }} />
             </div>
-            <audio id="beep" preload="auto" 
-            src="https://goo.gl/65cBl1"
-            ref={(audio) => { this.audioBeep = audio; }} />
-           
-        </div>
-      
+            </div>
+
+          
     );  
   }
 }
   
 
   ReactDOM.render(<App/>, document.getElementById('app'));
+  dragElement(document.getElementById("mydiv"));
   
